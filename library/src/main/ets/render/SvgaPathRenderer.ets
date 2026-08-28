@@ -11,20 +11,32 @@ import {
   SvgaShapeType
 } from '../model/SvgaModel';
 
+/** 一组矢量图形的绘制统计。 */
 export class SvgaShapeRenderStats {
+  /** 成功绘制的图形数量。 */
   drawnShapes: number = 0;
+  /** 因参数无效或 Path 构造失败而跳过的图形数量。 */
   skippedShapes: number = 0;
 }
 
+/** 负责解析、缓存和绘制 SVGA 矢量 Path 与裁剪 Path。 */
 export class SvgaPathRenderer {
   private readonly clipPathMap: Map<string, Path2D> = new Map<string, Path2D>();
   private readonly shapePathMap: Map<SvgaShapeEntity, Path2D> = new Map<SvgaShapeEntity, Path2D>();
 
+  /** 清空裁剪路径和图形路径缓存；切换动画实体后应调用。 */
   clearCache(): void {
     this.clipPathMap.clear();
     this.shapePathMap.clear();
   }
 
+  /**
+   * 解析并应用 SVG PathData 裁剪路径。
+   *
+   * @param context 目标 Canvas 2D 上下文。
+   * @param description SVG PathData 字符串。
+   * @returns 路径非空且成功应用时返回 true，否则返回 false。
+   */
   applyClipPath(context: CanvasRenderingContext2D, description: string): boolean {
     if (description.length === 0) {
       return false;
@@ -42,6 +54,13 @@ export class SvgaPathRenderer {
     return true;
   }
 
+  /**
+   * 按数组顺序绘制一组 SVGA 矢量图形。
+   *
+   * @param context 目标 Canvas 2D 上下文。
+   * @param shapes 当前帧的图形实体列表；KEEP 项会被忽略。
+   * @returns 成功和跳过的图形数量。
+   */
   drawShapes(context: CanvasRenderingContext2D,
     shapes: Array<SvgaShapeEntity>): SvgaShapeRenderStats {
     const stats: SvgaShapeRenderStats = new SvgaShapeRenderStats();

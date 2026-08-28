@@ -13,6 +13,7 @@ EXPECTED_NAME = "@moska9417/svgaplayer"
 REQUIRED_FILES = {
     "package/oh-package.json5",
     "package/README.md",
+    "package/API.zh-CN.md",
     "package/LICENSE",
     "package/CHANGELOG.md",
 }

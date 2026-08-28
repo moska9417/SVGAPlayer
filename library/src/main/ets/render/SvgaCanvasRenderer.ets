@@ -14,9 +14,13 @@ import {
   SvgaShapeRenderStats
 } from './SvgaPathRenderer';
 
+/** 动画设计画布映射到 ArkUI Canvas 的缩放模式。 */
 export class SvgaContentMode {
+  /** 分别缩放宽高以填满画布，可能改变原始宽高比。 */
   static readonly SCALE_TO_FILL: number = 0;
+  /** 保持宽高比并完整显示内容，画布可能出现留白。 */
   static readonly ASPECT_FIT: number = 1;
+  /** 保持宽高比并填满画布，超出区域会被裁切。 */
   static readonly ASPECT_FILL: number = 2;
 }
 
@@ -29,20 +33,39 @@ class SvgaCanvasTransform {
   ty: number = 0;
 }
 
+/** 单帧绘制结果、统计数据和可诊断错误。 */
 export class SvgaRenderResult {
+  /** 本次绘制是否成功完成。 */
   success: boolean = true;
+  /** 实际请求的帧序号。 */
   frame: number = 0;
+  /** 至少绘制了一项内容的精灵数量。 */
   drawnSprites: number = 0;
+  /** 成功绘制的位图数量。 */
   drawnImages: number = 0;
+  /** 成功绘制的矢量图形数量。 */
   drawnShapes: number = 0;
+  /** 成功应用的裁剪路径数量。 */
   appliedClipPaths: number = 0;
+  /** 因缺少 PixelMap 而跳过的图片数量。 */
   skippedImages: number = 0;
+  /** 因参数无效或 Path 构造失败而跳过的图形数量。 */
   skippedShapes: number = 0;
+  /** 因 Path 构造失败而跳过的裁剪路径数量。 */
   skippedClipPaths: number = 0;
+  /** 因当前版本不支持 matte 合成而跳过的遮罩数量。 */
   skippedMattes: number = 0;
+  /** 失败时的稳定错误码，成功时为空字符串。 */
   errorCode: string = '';
+  /** 失败时的可读错误信息，成功时为空字符串。 */
   errorMessage: string = '';
 
+  /**
+   * 将结果标记为失败并记录错误。
+   *
+   * @param code 稳定错误码。
+   * @param message 可读错误信息。
+   */
   fail(code: string, message: string): void {
     this.success = false;
     this.errorCode = code;
@@ -50,18 +73,33 @@ export class SvgaRenderResult {
   }
 }
 
+/**
+ * 将已解码的动画实体逐帧绘制到 CanvasRenderingContext2D。
+ *
+ * @remarks 渲染器不拥有动画实体和 PixelMap，调用方负责控制其生命周期。
+ */
 export class SvgaCanvasRenderer {
   private movie: SvgaMovieEntity;
   private readonly imageMap: Map<string, image.PixelMap> = new Map<string, image.PixelMap>();
   private readonly pathRenderer: SvgaPathRenderer = new SvgaPathRenderer();
   private shapeFrameIndices: Array<Array<number>> = [];
 
+  /**
+   * 创建逐帧渲染器。
+   *
+   * @param movie 已完成图片解码的动画实体。
+   */
   constructor(movie: SvgaMovieEntity) {
     this.movie = movie;
     this.reloadImages();
     this.rebuildShapeFrameIndices();
   }
 
+  /**
+   * 切换动画并重建图片映射与矢量图形缓存。
+   *
+   * @param movie 新的已解码动画实体。
+   */
   setMovie(movie: SvgaMovieEntity): void {
     this.movie = movie;
     this.pathRenderer.clearCache();
@@ -69,6 +107,11 @@ export class SvgaCanvasRenderer {
     this.rebuildShapeFrameIndices();
   }
 
+  /**
+   * 从当前动画重新收集可绘制的 PixelMap。
+   *
+   * @remarks 动画图片被外部解码或替换后应调用本方法。
+   */
   reloadImages(): void {
     this.imageMap.clear();
     for (let index: number = 0; index < this.movie.images.length; index++) {
@@ -79,10 +122,23 @@ export class SvgaCanvasRenderer {
     }
   }
 
+  /**
+   * 重置目标 Canvas 上下文并清空当前绘制状态。
+   *
+   * @param context 要清空的 Canvas 2D 上下文。
+   */
   clear(context: CanvasRenderingContext2D): void {
     context.reset();
   }
 
+  /**
+   * 将指定帧同步绘制到 Canvas。
+   *
+   * @param context 使用像素单位创建的 Canvas 2D 上下文。
+   * @param requestedFrame 从 0 开始的帧序号；非整数会向下取整。
+   * @param contentMode 缩放模式，默认为 {@link SvgaContentMode.ASPECT_FIT}。
+   * @returns 绘制统计；参数或绘制失败时通过 `success`、`errorCode` 和 `errorMessage` 描述错误。
+   */
   drawFrame(context: CanvasRenderingContext2D, requestedFrame: number,
     contentMode: number = SvgaContentMode.ASPECT_FIT): SvgaRenderResult {
     const result: SvgaRenderResult = new SvgaRenderResult();

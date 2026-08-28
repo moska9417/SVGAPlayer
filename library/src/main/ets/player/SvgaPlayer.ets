@@ -6,19 +6,39 @@ import {
 } from '../render/SvgaCanvasRenderer';
 import { SvgaPlayerController } from './SvgaPlayerController';
 
+/** 动画解析完成并绑定到播放器后触发的回调。 */
 export type SvgaPlayerReadyCallback = (movie: SvgaMovieEntity) => void;
 
+/** 动画读取、解析或图片解码失败时触发的回调。 */
 export type SvgaPlayerErrorCallback = (message: string) => void;
 
+/**
+ * 可自动读取、解析、渲染和播放 SVGA 2.x 动画的 ArkUI 组件。
+ *
+ * @remarks `source` 与 `movie` 同时提供时优先使用 `movie`。组件只自动释放由 `source` 解析得到且
+ * `autoRelease` 为 true 的动画；外部传入的 `movie` 始终由调用方负责释放。
+ */
 @Component
 export struct SvgaPlayer {
+  /**
+   * 动画来源，可传媒体 Resource、本地文件路径、`file://` 路径或完整文件字节。
+   *
+   * @remarks 不支持直接传入 HTTP 或 HTTPS 地址，远程文件必须先由业务侧下载。
+   */
   @Prop @Watch('onInputChange') source: ResourceStr | Uint8Array | undefined = undefined;
+  /** 已完成解析和图片解码的动画实体；设置后优先于 `source`。 */
   @Prop @Watch('onInputChange') movie: SvgaMovieEntity | undefined = undefined;
+  /** 缩放模式，使用 {@link SvgaContentMode} 中的值，默认为 ASPECT_FIT。 */
   @Prop @Watch('onContentModeChange') contentMode: number = SvgaContentMode.ASPECT_FIT;
+  /** 是否自动播放；运行时修改会相应地继续或暂停播放。 */
   @Prop @Watch('onPlayingChange') playing: boolean = true;
+  /** 组件消失或输入切换时，是否自动释放由 `source` 创建的 PixelMap，默认为 true。 */
   @Prop autoRelease: boolean = true;
+  /** 播放控制器；不传入时组件会创建独立控制器。 */
   controller: SvgaPlayerController = new SvgaPlayerController();
+  /** 动画成功绑定且 Canvas 已就绪时触发。 */
   onReady?: SvgaPlayerReadyCallback;
+  /** 动画来源读取、解析或图片解码失败时触发。 */
   onError?: SvgaPlayerErrorCallback;
   private readonly settings: RenderingContextSettings = new RenderingContextSettings(true);
   private readonly context: CanvasRenderingContext2D =

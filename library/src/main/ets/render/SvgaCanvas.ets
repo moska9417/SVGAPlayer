@@ -6,13 +6,23 @@ import {
   SvgaRenderResult
 } from './SvgaCanvasRenderer';
 
+/** 静态帧绘制完成后触发的回调。 */
 export type SvgaRenderCallback = (result: SvgaRenderResult) => void;
 
+/**
+ * 在 ArkUI Canvas 上绘制指定 SVGA 帧的无时间轴组件。
+ *
+ * @remarks 组件不拥有 `movie`，不会自动释放其中的 PixelMap。适用于封面、缩略图和业务自定义时间轴。
+ */
 @Component
 export struct SvgaCanvas {
+  /** 已完成图片解码的动画实体。 */
   @Prop @Watch('onMovieChange') movie: SvgaMovieEntity | undefined = undefined;
+  /** 要绘制的从 0 开始的帧序号，默认为 0。 */
   @Prop @Watch('onRenderInputChange') frame: number = 0;
+  /** 缩放模式，使用 {@link SvgaContentMode} 中的值，默认为 ASPECT_FIT。 */
   @Prop @Watch('onRenderInputChange') contentMode: number = SvgaContentMode.ASPECT_FIT;
+  /** 每次尝试绘制后触发，返回绘制统计或错误信息。 */
   onRendered?: SvgaRenderCallback;
 
   private readonly settings: RenderingContextSettings = new RenderingContextSettings(true);

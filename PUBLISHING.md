@@ -25,7 +25,7 @@ Do not commit `.ohpmrc`, private keys, publishing codes, signing material, or lo
 3. Synchronize the package documents:
 
 ```shell
-cp README.md LICENSE CHANGELOG.md THIRD_PARTY_NOTICES.md library/
+cp README.md API.zh-CN.md LICENSE CHANGELOG.md THIRD_PARTY_NOTICES.md library/
 ```
 
 4. Build the open-source HAR:

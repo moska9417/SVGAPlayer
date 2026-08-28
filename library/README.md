@@ -2,6 +2,8 @@
 
 SVGAPlayer is an open-source SVGA 2.x parser and player for HarmonyOS. It combines an asynchronous Native C++ parser with ArkTS image decoding, ArkUI Canvas rendering, and a shared DisplaySync playback clock.
 
+中文使用说明与完整 API 参考请参阅 [API.zh-CN.md](API.zh-CN.md)。
+
 ## Features
 
 - SVGA 2.x zlib + protobuf parsing on a Node-API worker thread
