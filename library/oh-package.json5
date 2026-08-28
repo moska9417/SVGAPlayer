@@ -1,0 +1,24 @@
+{
+  "name": "@moska9417/svgaplayer",
+  "version": "1.0.0",
+  "description": "An SVGA 2.x parser and player for HarmonyOS with native asynchronous decoding and ArkUI Canvas rendering.",
+  "keywords": [
+    "svga",
+    "svgaplayer",
+    "animation",
+    "arkui",
+    "harmonyos"
+  ],
+  "main": "Index.ets",
+  "author": {
+    "name": "moska9417",
+    "url": "https://github.com/moska9417"
+  },
+  "homepage": "https://github.com/moska9417/SVGAPlayer",
+  "repository": "https://github.com/moska9417/SVGAPlayer.git",
+  "license": "MIT",
+  "artifactType": "original",
+  "dependencies": {
+    "libsvgaplayer.so": "file:./src/main/cpp/types/libsvgaplayer"
+  }
+}

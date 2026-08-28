@@ -1,0 +1,3 @@
+# Keep public SVGA APIs when the consuming application enables obfuscation.
+-keep
+./Index.ets

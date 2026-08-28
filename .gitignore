@@ -1,0 +1,12 @@
+/.hvigor/
+/.idea/
+/oh_modules/
+/node_modules/
+/local.properties
+**/oh_modules/
+**/build/
+**/.cxx/
+**/.preview/
+*.har
+*.tgz
+.DS_Store
